@@ -1,0 +1,4 @@
+common --verbose_failures
+test --test_output=all
+test:env --define=protobuf_c_env_protoc=true
+build:windows --cxxopt=/std:c++17 --host_cxxopt=/std:c++17
