@@ -1,9 +1,6 @@
 """ Generate protobuf C code """
 
-load("@rules_cc//cc:defs.bzl", "cc_library")
-
 def _impl(ctx):
-    print(ctx.executable)
     if ctx.executable.protoc:
         protoc = ctx.executable.protoc
     else:
@@ -64,7 +61,7 @@ def c_proto_library(name, deps = []):
         }),
     )
 
-    cc_library(
+    native.cc_library(
         name = name,
         srcs = [name_pb],
         includes = ["."],
