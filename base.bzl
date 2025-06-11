@@ -41,28 +41,30 @@ def cc_library_func(ctx, name, hdrs, srcs, copts, dep_ccinfos, includes = []):
         linking_context = linking_context,
     )
 
-def _impl(ctx):
-    if ctx.executable.protoc:
-        protoc = ctx.executable.protoc
-    else:
+def _aspect_impl(target, ctx):
+    if ctx.var.get("c_proto_env_protoc", "false") == "true":
         protoc = "protoc"
+    else:
+        protoc = ctx.rule.executable._proto_compiler
 
-    proto = ctx.attr.deps[0][ProtoInfo]
+    proto_info = target[ProtoInfo]
 
-    proto_files = proto.direct_sources
+    proto_files = proto_info.direct_sources
     output_dir = ctx.genfiles_dir.path
 
-    outputs = []
+    srcs = []
+    hdrs = []
     for proto_file in proto_files:
-        base_name = proto_file.basename[:-6]  # remove .proto suffix
-        hdr = ctx.actions.declare_file(base_name + ".pb-c.h")
-        outputs.append(hdr)
-        src = ctx.actions.declare_file(base_name + ".pb-c.c")
-        outputs.append(src)
+        # remove prefix and .proto suffix
+        base_name = proto_file.basename[:-6]
+        hdrs.append(ctx.actions.declare_file(base_name + ".pb-c.h"))
+        srcs.append(ctx.actions.declare_file(base_name + ".pb-c.c"))
+
+    outputs = srcs + hdrs
 
     args = ctx.actions.args()
     args.add("--c_out=" + output_dir)
-    args.add_all(["-I" + p for p in proto.transitive_proto_path.to_list()])
+    args.add_all(["-I" + p for p in proto_info.transitive_proto_path.to_list()])
     args.add_all([proto_file.path for proto_file in proto_files])
     # print(args)
 
@@ -72,50 +74,53 @@ def _impl(ctx):
         executable = protoc,
         arguments = [args],
         mnemonic = "ProtoCompile",
-        progress_message = "Generating C proto files for %s" % ctx.label,
+        progress_message = "Generating C proto {}".format(ctx.label),
         use_default_shell_env = True,
     )
 
-    copts = []
     if ctx.var.get("C_COMPILER", "") == "msvc-cl":
-        copts.append("/utf-8")
+        copts = ["/utf-8"]
+    else:
+        copts = []
+
+    dep_ccinfos = [dep[CcInfo] for dep in (ctx.attr._c_deps + ctx.rule.attr.deps)]
 
     return cc_library_func(
         ctx = ctx,
         name = ctx.label.name,
-        hdrs = [hdr],
-        srcs = [src],
+        hdrs = hdrs,
+        srcs = srcs,
         copts = copts,
-        dep_ccinfos = [ctx.attr._dep[CcInfo]],
+        dep_ccinfos = dep_ccinfos,
         includes = [output_dir],
     )
 
-_c_proto = rule(
+_c_proto_aspect = aspect(
+    implementation = _aspect_impl,
+    attr_aspects = ["deps"],
+    fragments = ["cpp", "proto"],
+    required_providers = [ProtoInfo],
+    provides = [CcInfo],
+    toolchains = use_cpp_toolchain(),
+    attrs = {
+        "_c_deps": attr.label_list(
+            default = ["@rules_c_proto//src:protobuf_c"],
+        ),
+    },
+)
+
+def _impl(ctx):
+    return [ctx.attr.deps[0][CcInfo]]
+
+c_proto_library = rule(
     implementation = _impl,
     attrs = {
         "deps": attr.label_list(
-            mandatory = True,
+            # use aspect to avoid generating conflict
+            aspects = [_c_proto_aspect],
             providers = [ProtoInfo],
-        ),
-        "protoc": attr.label(
-            executable = True,
-            cfg = "exec",
-        ),
-        "_dep": attr.label(
-            default = "@rules_c_proto//src:protobuf_c",
+            allow_files = False,
         ),
     },
-    toolchains = use_cpp_toolchain(),
-    fragments=["cpp"],
     provides = [CcInfo],
 )
-
-def c_proto_library(name, deps = []):
-    _c_proto(
-        name = name,
-        deps = deps,
-        protoc = select({
-            "@rules_c_proto//:env_protoc": None,
-            "//conditions:default": "@protobuf//:protoc",
-        }),
-    )

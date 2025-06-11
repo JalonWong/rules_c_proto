@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package foo;
 
+import "test/msg/msg.proto";
+
 message Person {
   string name = 1;
   int32 id = 2;

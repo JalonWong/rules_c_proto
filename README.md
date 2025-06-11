@@ -38,10 +38,10 @@ cc_binary(
 ### Options
 It will compile `protoc` by default. If you want to use your pre-installed `protoc`, add the following to your `.bazelrc`. You can also use it in the command line.
 ```sh
-build --define=protobuf_c_env_protoc=true
+build --define=c_proto_env_protoc=true
 ```
 
 If you don't want to use the heap in the std lib, for example embedded software, use the following.
 ```sh
-build --define=protobuf_c_no_std=true
+build --define=c_proto_no_std=true
 ```

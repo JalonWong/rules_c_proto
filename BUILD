@@ -7,10 +7,10 @@ config_setting(
 
 config_setting(
     name = "no_std",
-    define_values = {"protobuf_c_no_std": "true"},
+    define_values = {"c_proto_no_std": "true"},
 )
 
 config_setting(
     name = "env_protoc",
-    define_values = {"protobuf_c_env_protoc": "true"},
+    define_values = {"c_proto_env_protoc": "true"},
 )
