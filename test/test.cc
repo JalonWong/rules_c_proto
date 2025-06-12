@@ -12,15 +12,15 @@ TEST(PROTOBUF_C, TEST1) {
     unsigned char *packed;
     ProtobufCBufferSimple bs = PROTOBUF_C_BUFFER_SIMPLE_INIT (simple_pad);
 
-    comment.comment = "protobuf-c guy";
+    comment.comment = (char*)"protobuf-c guy";
 
-    phone.number = "1234";
+    phone.number = (char*)"1234";
     phone.type = FOO__PERSON__PHONE_TYPE__WORK;
     phone.comment = &comment;
 
     phone_numbers[0] = &phone;
 
-    person.name = "dave b";
+    person.name = (char*)"dave b";
     person.id = 42;
     person.n_phone = 1;
     person.phone = phone_numbers;

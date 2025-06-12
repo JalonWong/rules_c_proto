@@ -36,12 +36,12 @@ cc_binary(
 ```
 
 ### Options
-It will compile `protoc` by default. If you want to use your pre-installed `protoc`, add the following to your `.bazelrc`. You can also use it in the command line.
+It will download `protoc` and `protoc-gen-c` by default. If you want to use your pre-installed binary, add the following to your `.bazelrc`. You can also use it in the command line.
 ```sh
 build --define=c_proto_env_protoc=true
 ```
 
-If you don't want to use the heap in the std lib, for example embedded software, use the following.
+If you don't want to use the heap in the std lib with your source code, for example embedded software, use the following.
 ```sh
 build --define=c_proto_no_std=true
 ```

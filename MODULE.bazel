@@ -3,3 +3,8 @@ module(name = "rules_c_proto")
 
 bazel_dep(name = "protobuf", version = "31.1")
 bazel_dep(name = "googletest", version = "1.17.0", dev_dependency = True)
+
+get_protoc = use_extension("//tools:extensions.bzl", "get_protoc")
+use_repo(get_protoc, "get_protoc_")
+get_protoc_c = use_extension("//tools:extensions.bzl", "get_protoc_c")
+use_repo(get_protoc_c, "get_protoc_c_")

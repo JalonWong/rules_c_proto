@@ -44,8 +44,12 @@ def cc_library_func(ctx, name, hdrs, srcs, copts, dep_ccinfos, includes = []):
 def _aspect_impl(target, ctx):
     if ctx.var.get("c_proto_env_protoc", "false") == "true":
         protoc = "protoc"
+        use_env_exec = True
     else:
-        protoc = ctx.rule.executable._proto_compiler
+        protoc = ctx.executable._get_protoc
+        protoc_c = ctx.executable._get_protoc_c
+        # protoc = ctx.rule.executable._proto_compiler
+        use_env_exec = False
 
     proto_info = target[ProtoInfo]
 
@@ -63,19 +67,22 @@ def _aspect_impl(target, ctx):
     outputs = srcs + hdrs
 
     args = ctx.actions.args()
+    if not use_env_exec:
+        args.add("--plugin=protoc-gen-c=" + protoc_c.path)
     args.add("--c_out=" + output_dir)
     args.add_all(["-I" + p for p in proto_info.transitive_proto_path.to_list()])
     args.add_all([proto_file.path for proto_file in proto_files])
     # print(args)
 
     ctx.actions.run(
-        inputs = proto_files,
+        inputs = proto_info.transitive_sources,
         outputs = outputs,
         executable = protoc,
+        tools = [protoc_c],
         arguments = [args],
         mnemonic = "ProtoCompile",
         progress_message = "Generating C proto {}".format(ctx.label),
-        use_default_shell_env = True,
+        use_default_shell_env = use_env_exec,
     )
 
     if ctx.var.get("C_COMPILER", "") == "msvc-cl":
@@ -105,6 +112,16 @@ _c_proto_aspect = aspect(
     attrs = {
         "_c_deps": attr.label_list(
             default = ["@rules_c_proto//src:protobuf_c"],
+        ),
+        "_get_protoc": attr.label(
+            default = "@get_protoc_//:bin",
+            executable = True,
+            cfg = "exec",
+        ),
+        "_get_protoc_c": attr.label(
+            default = "@get_protoc_c_//:bin",
+            executable = True,
+            cfg = "exec",
         ),
     },
 )
