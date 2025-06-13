@@ -48,11 +48,11 @@ def get_asset_info(asset: dict[str, str], ret: dict[str, Any]) -> None:
     ret[key] = tmp
 
 
-def get_latest_release_download_url(
+def get_latest_download_info(
     repo_name: str,
     info: str
 ) -> dict[str, str] | None:
-    print(f"---- Getting {repo_name} --------")
+    print(f"---- Getting {repo_name} --------", flush=True)
 
     # Construct the GitHub API URL for the latest release
     api_url = f"https://api.github.com/repos/{repo_name}/releases/latest"
@@ -79,6 +79,7 @@ def get_latest_release_download_url(
         if "assets" in release_data and len(release_data["assets"]) > 0:
             for a in release_data["assets"]:
                 get_asset_info(a, ret)
+            print(f"Got {ver}")
             return ret
         else:
             print("No assets found in the latest release.")
@@ -97,21 +98,22 @@ def get_latest_release_download_url(
 
 if __name__ == "__main__":
     out_name = "tools/tools_reg.bzl"
-    separator = "#----"
+    separator = "\n#----\n"
     with open(out_name, "r") as f:
         [protoc_info, protoc_c_info] = f.read().split(separator)
 
+    commit_msg = "Update tools"
     need_write = False
-    ret = get_latest_release_download_url("protocolbuffers/protobuf", protoc_info)
+    ret = get_latest_download_info("protocolbuffers/protobuf", protoc_info)
     if ret is not None:
-        ret_text = json.dumps([ret], indent=4).replace("\n]", ",")
-        protoc_info = protoc_info.replace("[", ret_text)
+        protoc_info = "PROTOC = " + json.dumps(ret, indent=4)
+        commit_msg = commit_msg + f" protoc {ret["version"]}"
         need_write = True
 
-    ret = get_latest_release_download_url("JalonWong/protobuf-c-release", protoc_c_info)
+    ret = get_latest_download_info("JalonWong/protobuf-c-release", protoc_c_info)
     if ret is not None:
-        ret_text = json.dumps([ret], indent=4).replace("\n]", ",")
-        protoc_c_info = protoc_c_info.replace("[", ret_text)
+        protoc_c_info = "PROTOC_C = " + json.dumps(ret, indent=4)
+        commit_msg = commit_msg + f" protoc-gen-c {ret["version"]}"
         need_write = True
 
     if need_write:
@@ -119,3 +121,8 @@ if __name__ == "__main__":
             f.write(protoc_info)
             f.write(separator)
             f.write(protoc_c_info)
+
+        with open("commit.txt", "w") as f:
+            f.write(commit_msg)
+    else:
+        print("No changes", flush=True)

@@ -1,7 +1,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("//tools:tools_reg.bzl", "PROTOC", "PROTOC_C")
 
-def get_tool(ctx, tools, version = None):
+def get_tool(ctx, tools):
     if "windows" in ctx.os.name:
         key = "windows"
     elif "mac" in ctx.os.name:
@@ -14,16 +14,10 @@ def get_tool(ctx, tools, version = None):
     else:
         key = key + "-" + ctx.os.arch
 
-    tool = tools[0]
-    if version:
-        for t in tools:
-            if t["version"] == version:
-                tool = t
-
-    if key not in tool:
+    if key not in tools:
         key = "linux-amd64"
 
-    return tool[key]
+    return tools[key]
 
 def _get_protoc_impl(ctx):
     t = get_tool(ctx, PROTOC)
