@@ -1,7 +1,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("//tools:tools_reg.bzl", "PROTOC", "PROTOC_C")
 
-def get_os_key(ctx):
+def get_tool(ctx, tools, version = None):
     if "windows" in ctx.os.name:
         key = "windows"
     elif "mac" in ctx.os.name:
@@ -10,16 +10,27 @@ def get_os_key(ctx):
         key = ctx.os.name
 
     if ctx.os.arch == "x86_64":
-        return key + "-amd64"
+        key = key + "-amd64"
     else:
-        return key + "-" + ctx.os.arch
+        key = key + "-" + ctx.os.arch
+
+    tool = tools[0]
+    if version:
+        for t in tools:
+            if t["version"] == version:
+                tool = t
+
+    if key not in tool:
+        key = "linux-amd64"
+
+    return tool[key]
 
 def _get_protoc_impl(ctx):
-    p = PROTOC[0][get_os_key(ctx)]
+    t = get_tool(ctx, PROTOC)
     http_archive(
         name = "get_protoc_",
-        url = p["url"],
-        sha256 = p["sha256"],
+        url = t["url"],
+        sha256 = t["sha256"],
         build_file = "//:tools/bin.BUILD",
     )
 
@@ -28,11 +39,11 @@ get_protoc = module_extension(
 )
 
 def _get_protoc_c_impl(ctx):
-    p = PROTOC_C[0][get_os_key(ctx)]
+    t = get_tool(ctx, PROTOC_C)
     http_archive(
         name = "get_protoc_c_",
-        url = p["url"],
-        sha256 = p["sha256"],
+        url = t["url"],
+        sha256 = t["sha256"],
         build_file = "//:tools/bin.BUILD",
     )
 
