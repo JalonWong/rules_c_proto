@@ -28,16 +28,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@main
-      # - name: Add msbuild to PATH
-      #   if: matrix.goos == 'windows'
-      #   uses: microsoft/setup-msbuild@v2
-      #   with:
-      #     msbuild-architecture: x64
-      - name: ENV
+      - name: env
         run: bazel --version
       - name: Test on Windows
         if: matrix.goos == 'windows'
         run: bazel test --config=windows //test:test //test:test2
       - name: Test
         if: matrix.goos != 'windows'
-        run: bazel test //test:test //test:test2
+        run: bazel test --config=osx //test:test //test:test2

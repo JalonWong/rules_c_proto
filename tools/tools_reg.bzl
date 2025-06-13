@@ -33,7 +33,7 @@ PROTOC_C = [
         },
         "macos-amd64": {
             "url": "https://github.com/JalonWong/protobuf-c-release/releases/download/v1.5.2/protobuf-c-osx-amd64.zip",
-            "sha256": "sha256:e386e2f5243eb76e9d929a4b9bde0de1996aa1134fc92bb224923f789c5dd4db",
+            "sha256": "e386e2f5243eb76e9d929a4b9bde0de1996aa1134fc92bb224923f789c5dd4db",
         },
         "macos-aarch64": {
             "url": "https://github.com/JalonWong/protobuf-c-release/releases/download/v1.5.2/protobuf-c-osx-arm64.zip",

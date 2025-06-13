@@ -9,11 +9,12 @@ def get_os_key(ctx):
     else:
         key = ctx.os.name
 
-    return key + "-" + ctx.os.arch
+    if ctx.os.arch == "x86_64":
+        return key + "-amd64"
+    else:
+        return key + "-" + ctx.os.arch
 
 def _get_protoc_impl(ctx):
-    print(get_os_key(ctx))
-
     p = PROTOC[0][get_os_key(ctx)]
     http_archive(
         name = "get_protoc_",
@@ -27,8 +28,6 @@ get_protoc = module_extension(
 )
 
 def _get_protoc_c_impl(ctx):
-    print(get_os_key(ctx))
-
     p = PROTOC_C[0][get_os_key(ctx)]
     http_archive(
         name = "get_protoc_c_",
