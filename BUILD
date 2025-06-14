@@ -18,5 +18,9 @@ config_setting(
 alias(
     name = "protobuf_c",
     actual = "//src:protobuf_c",
-    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "protobuf-c_proto",
+    actual = "//proto/protobuf-c:protobuf-c_proto",
 )

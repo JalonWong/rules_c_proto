@@ -68,24 +68,28 @@ def _aspect_impl(target, ctx):
 
     outputs = srcs + hdrs
 
-    args = ctx.actions.args()
-    if not use_env_exec:
-        args.add("--plugin=protoc-gen-c=" + plugin.path)
-    args.add("--c_out=" + output_dir)
-    args.add_all(["-I" + p for p in proto_info.transitive_proto_path.to_list()])
-    args.add_all([proto_file.path for proto_file in proto_files])
-    # print(args)
+    if proto_files[0].basename == "protobuf-c.proto":
+        for o in outputs:
+            ctx.actions.write(o, "// Useless")
+    else:
+        args = ctx.actions.args()
+        if not use_env_exec:
+            args.add("--plugin=protoc-gen-c=" + plugin.path)
+        args.add("--c_out=" + output_dir)
+        args.add_all(["-I" + p for p in proto_info.transitive_proto_path.to_list()])
+        args.add_all([proto_file.path for proto_file in proto_files])
+        # print(args)
 
-    ctx.actions.run(
-        inputs = proto_info.transitive_sources,
-        outputs = outputs,
-        executable = protoc,
-        tools = [plugin],
-        arguments = [args],
-        mnemonic = "ProtoCompile",
-        progress_message = "Generating C proto {}".format(ctx.label),
-        use_default_shell_env = use_env_exec,
-    )
+        ctx.actions.run(
+            inputs = proto_info.transitive_sources,
+            outputs = outputs,
+            executable = protoc,
+            tools = [plugin],
+            arguments = [args],
+            mnemonic = "ProtoCompile",
+            progress_message = "Generating C proto {}".format(ctx.label),
+            use_default_shell_env = use_env_exec,
+        )
 
     if ctx.var.get("C_COMPILER", "") == "msvc-cl":
         copts = ["/utf-8"]
