@@ -41,7 +41,7 @@ def cc_library_func(ctx, name, hdrs, srcs, copts, dep_ccinfos, includes = []):
         linking_context = linking_context,
     )
 
-def _aspect_impl(target, ctx):
+def c_proto_aspect_impl(target, ctx):
     if ctx.var.get("c_proto_env_protoc", "false") == "true":
         protoc = "protoc"
         use_env_exec = True
@@ -109,7 +109,7 @@ def _aspect_impl(target, ctx):
     )
 
 _c_proto_aspect = aspect(
-    implementation = _aspect_impl,
+    implementation = c_proto_aspect_impl,
     attr_aspects = ["deps"],
     fragments = ["cpp", "proto"],
     required_providers = [ProtoInfo],
