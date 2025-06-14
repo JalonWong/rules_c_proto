@@ -1,9 +1,10 @@
-import requests
+import hashlib
 import json
 import os
 import subprocess
-import hashlib
 from typing import Any
+
+import requests
 
 
 def get_sha256(name: str, url: str) -> str:
@@ -48,19 +49,14 @@ def get_asset_info(asset: dict[str, str], ret: dict[str, Any]) -> None:
     ret[key] = tmp
 
 
-def get_latest_download_info(
-    repo_name: str,
-    info: str
-) -> dict[str, str] | None:
+def get_latest_download_info(repo_name: str, info: str) -> dict[str, str] | None:
     print(f"---- Getting {repo_name} --------", flush=True)
 
     # Construct the GitHub API URL for the latest release
     api_url = f"https://api.github.com/repos/{repo_name}/releases/latest"
 
     # Set headers for GitHub API (authentication is optional but recommended)
-    headers = {
-        "Accept": "application/vnd.github.v3+json"
-    }
+    headers = {"Accept": "application/vnd.github.v3+json"}
 
     try:
         # Make the API request
@@ -107,13 +103,13 @@ if __name__ == "__main__":
     ret = get_latest_download_info("protocolbuffers/protobuf", protoc_info)
     if ret is not None:
         protoc_info = "PROTOC = " + json.dumps(ret, indent=4)
-        commit_msg = commit_msg + f" protoc {ret["version"]}"
+        commit_msg = commit_msg + f" protoc {ret['version']}"
         need_write = True
 
     ret = get_latest_download_info("JalonWong/protobuf-c-release", protoc_c_info)
     if ret is not None:
         protoc_c_info = "PROTOC_C = " + json.dumps(ret, indent=4)
-        commit_msg = commit_msg + f" protoc-gen-c {ret["version"]}"
+        commit_msg = commit_msg + f" protoc-gen-c {ret['version']}"
         need_write = True
 
     if need_write:
