@@ -14,3 +14,9 @@ config_setting(
     name = "env_protoc",
     define_values = {"c_proto_env_protoc": "true"},
 )
+
+alias(
+    name = "protobuf_c",
+    actual = "//src:protobuf_c",
+    visibility = ["//visibility:public"],
+)

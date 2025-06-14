@@ -46,29 +46,31 @@ def _aspect_impl(target, ctx):
         protoc = "protoc"
         use_env_exec = True
     else:
-        protoc = ctx.executable._get_protoc
-        protoc_c = ctx.executable._get_protoc_c
+        protoc = ctx.executable._protoc
+        plugin = ctx.executable._plugin
         # protoc = ctx.rule.executable._proto_compiler
         use_env_exec = False
 
     proto_info = target[ProtoInfo]
 
     proto_files = proto_info.direct_sources
-    output_dir = ctx.genfiles_dir.path
+    output_dir = proto_info.proto_source_root
+    if output_dir == ".":
+        output_dir = ctx.genfiles_dir.path
 
     srcs = []
     hdrs = []
     for proto_file in proto_files:
-        # remove prefix and .proto suffix
+        # remove .proto suffix
         base_name = proto_file.basename[:-6]
-        hdrs.append(ctx.actions.declare_file(base_name + ".pb-c.h"))
-        srcs.append(ctx.actions.declare_file(base_name + ".pb-c.c"))
+        hdrs.append(ctx.actions.declare_file(base_name + ".pb-c.h", sibling = proto_file))
+        srcs.append(ctx.actions.declare_file(base_name + ".pb-c.c", sibling = proto_file))
 
     outputs = srcs + hdrs
 
     args = ctx.actions.args()
     if not use_env_exec:
-        args.add("--plugin=protoc-gen-c=" + protoc_c.path)
+        args.add("--plugin=protoc-gen-c=" + plugin.path)
     args.add("--c_out=" + output_dir)
     args.add_all(["-I" + p for p in proto_info.transitive_proto_path.to_list()])
     args.add_all([proto_file.path for proto_file in proto_files])
@@ -78,7 +80,7 @@ def _aspect_impl(target, ctx):
         inputs = proto_info.transitive_sources,
         outputs = outputs,
         executable = protoc,
-        tools = [protoc_c],
+        tools = [plugin],
         arguments = [args],
         mnemonic = "ProtoCompile",
         progress_message = "Generating C proto {}".format(ctx.label),
@@ -111,14 +113,14 @@ _c_proto_aspect = aspect(
     toolchains = use_cpp_toolchain(),
     attrs = {
         "_c_deps": attr.label_list(
-            default = ["@rules_c_proto//src:protobuf_c"],
+            default = ["@rules_c_proto//:protobuf_c"],
         ),
-        "_get_protoc": attr.label(
+        "_protoc": attr.label(
             default = "@get_protoc_//:bin",
             executable = True,
             cfg = "exec",
         ),
-        "_get_protoc_c": attr.label(
+        "_plugin": attr.label(
             default = "@get_protoc_c_//:bin",
             executable = True,
             cfg = "exec",

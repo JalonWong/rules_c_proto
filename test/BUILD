@@ -28,6 +28,7 @@ proto_library(
     deps = [
         ":test_proto",
         "//test/msg:msg_proto",
+        "//test/base:types_proto",
     ],
 )
 c_proto_library(
