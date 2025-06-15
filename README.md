@@ -51,12 +51,12 @@ If you want to use the options that in the [protobuf-c.proto](https://github.com
 ```py
 ...
 
-get_protobuf_c = use_extension("@rules_c_proto//tools:extensions.bzl", "get_protobuf_c")
+get_protobuf_c = use_extension("@rules_c_proto//:extensions.bzl", "get_protobuf_c")
 use_repo(get_protobuf_c, "protobuf_c")
 bazel_dep(name = "protobuf", version = "31.1")
 ```
 
-At your `msg.proto`
+Add following to your `msg.proto`
 ```proto
 import "protobuf-c/protobuf-c.proto";
 
