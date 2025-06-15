@@ -47,14 +47,14 @@ cc_test(
 proto_library(
     name = "test-full_proto",
     srcs = ["test-full.proto"],
-    deps = ["//:protobuf-c_proto"],
+    deps = ["@protobuf_c//:protobuf-c_proto"],
 )
 c_proto_library(
     name = "test-full_c_proto",
     deps = [":test-full_proto"],
 )
 cc_test(
-    name = "test_full",
+    name = "test-full",
     srcs = ["test-full.cc"],
     deps = [
         ":test-full_c_proto",
@@ -67,6 +67,6 @@ test_suite(
     tests = [
         ":test",
         ":test2",
-        ":test_full"
+        ":test-full",
     ],
 )
