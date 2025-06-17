@@ -43,7 +43,7 @@ build --define=c_proto_env_protoc=true
 ```
 
 ## Proto Options
-If you want to use the options that in the [protobuf-c.proto](https://github.com/protobuf-c/protobuf-c/blob/master/protobuf-c/protobuf-c.proto), add following to your `MODULE.bazel`
+If you want to use the options in the [protobuf-c.proto](https://github.com/protobuf-c/protobuf-c/blob/master/protobuf-c/protobuf-c.proto), add following to your `MODULE.bazel`
 ```py
 ...
 
