@@ -1,5 +1,5 @@
 """ Module """
-module(name = "rules_c_proto")
+module(name = "rules_c_proto", version = "0.0.0", compatibility_level = 1)
 
 get_protoc = use_extension("//:extensions.bzl", "get_protoc")
 use_repo(get_protoc, "get_protoc_")

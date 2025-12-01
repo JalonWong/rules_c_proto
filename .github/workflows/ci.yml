@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   workflow_dispatch:
@@ -12,27 +12,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
-        include:
-          - os: ubuntu-latest
-            goos: linux
-            suffix: linux-amd64
-          - os: windows-latest
-            goos: windows
-            suffix: windows-amd64
-          - os: macos-13
-            goos: darwin
-            suffix: osx-amd64
-          - os: macos-latest
-            goos: darwin
-            suffix: osx-arm64
 
     steps:
       - uses: actions/checkout@main
       - name: env
         run: bazel --version
       - name: Test on Windows
-        if: matrix.goos == 'windows'
+        if: matrix.os == 'windows-latest'
         run: bazel test --config=windows //test:tests
       - name: Test
-        if: matrix.goos != 'windows'
+        if: matrix.os != 'windows-latest'
         run: bazel test --config=osx //test:tests

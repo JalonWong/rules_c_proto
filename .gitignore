@@ -2,3 +2,5 @@
 /*.lock
 /bazel-*
 /commit.txt
+/.mypy_cache
+/*.tar.*

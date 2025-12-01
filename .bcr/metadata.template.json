@@ -1,0 +1,16 @@
+{
+  "homepage": "https://github.com/JalonWong/rules_c_proto",
+  "maintainers": [
+    {
+      "name": "Jalon Wong",
+      "email": "jalonwong@gmail.com",
+      "github": "JalonWong",
+      "github_user_id": 5309088
+    }
+  ],
+  "repository": [
+    "github:JalonWong/rules_c_proto"
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
