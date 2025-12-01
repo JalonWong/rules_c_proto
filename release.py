@@ -2,12 +2,12 @@ import sys
 import tarfile
 from glob import glob
 
-TAMPLATE = '''
+TAMPLATE = """
 `MODULE.bazel`:
 ```py
 bazel_dep(name = "rules_c_proto", version = "{version}")
 ```
-'''
+"""
 
 
 if __name__ == "__main__":
@@ -27,6 +27,8 @@ if __name__ == "__main__":
         tar.add("tools/bin.BUILD")
         tar.add("tools/BUILD")
 
-        files = glob("*.bzl") + glob("test/**", recursive=True) + glob("tools/*.bzl", recursive=True)
+        files = (
+            glob("*.bzl") + glob("test/base/**", recursive=True) + glob("tools/*.bzl", recursive=True)
+        )
         for file in files:
             tar.add(file)
