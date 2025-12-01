@@ -5,13 +5,9 @@ The C source code comes from [protobuf-c](https://github.com/protobuf-c/protobuf
 ## Getting Started
 `MODULE.bazel`
 ```py
-bazel_dep(name = "rules_c_proto")
-git_override(
-    module_name="rules_c_proto",
-    remote="https://github.com/JalonWong/rules_c_proto.git",
-    branch="main",
-)
+bazel_dep(name = "rules_c_proto", version = "<version>")
 ```
+See [Releases](https://github.com/JalonWong/rules_c_proto/releases)
 
 `BUILD`
 ```py

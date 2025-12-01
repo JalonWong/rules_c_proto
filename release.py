@@ -1,18 +1,22 @@
-import subprocess
 import sys
 import tarfile
 from glob import glob
 
-PYTHON = sys.executable
+TAMPLATE = '''
+`MODULE.bazel`:
+```py
+bazel_dep(name = "rules_c_proto", version = "{version}")
+```
+'''
 
 
 if __name__ == "__main__":
     tag = sys.argv[1]
 
-    subprocess.run([PYTHON, "--version"])
-
     with open("MODULE.bazel", "r") as f:
-        text = f.read().replace("0.0.0", tag.replace("v", ""))
+        v = tag.replace("v", "")
+        print(TAMPLATE.format(version=v))
+        text = f.read().replace("0.0.0", v)
         with open("MODULE.bazel", "w") as f:
             f.write(text)
 
