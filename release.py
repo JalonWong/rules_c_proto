@@ -24,11 +24,9 @@ if __name__ == "__main__":
         tar.add(".bazelrc")
         tar.add("BUILD")
         tar.add("MODULE.bazel")
-        tar.add("tools/bin.BUILD")
-        tar.add("tools/BUILD")
 
         files = (
-            glob("*.bzl") + glob("test/base/**", recursive=True) + glob("tools/*.bzl", recursive=True)
+            glob("*.bzl") + glob("test/base/**", recursive=True) + glob("tools/**", recursive=True)
         )
         for file in files:
             tar.add(file)

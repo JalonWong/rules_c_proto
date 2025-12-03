@@ -28,6 +28,10 @@ PROTOC_C = {
         "url": "https://github.com/JalonWong/protobuf-c-release/releases/download/v1.5.2.1/protobuf-c-linux-amd64.tar.gz",
         "sha256": "80ac6a0dbb88dad143d1fdefec64c2b57e7dcf0d8d023b5d97712a55c21853ad"
     },
+    "linux-aarch64": {
+        "url": "https://github.com/JalonWong/protobuf-c-release/releases/download/v1.5.2.1/protobuf-c-linux-arm64.tar.gz",
+        "sha256": "cdf4701f17a415758315206f880c626136a2af6fd09f98c55bc07222ef4335d5"
+    },
     "macos-amd64": {
         "url": "https://github.com/JalonWong/protobuf-c-release/releases/download/v1.5.2.1/protobuf-c-osx-amd64.zip",
         "sha256": "daca29be73a000384505e9fd3a78bf32768a48b46f1ca285c9221f785da52df2"
