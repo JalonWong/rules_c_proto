@@ -1,3 +1,4 @@
+import re
 import sys
 import tarfile
 from glob import glob
@@ -17,6 +18,7 @@ if __name__ == "__main__":
         v = tag.replace("v", "")
         print(TAMPLATE.format(version=v))
         text = f.read().replace("0.0.0", v)
+        text = re.sub(r"bazel_dep\(.+dev_dependency = True\)\n", "", text)
         with open("MODULE.bazel", "w") as f:
             f.write(text)
 
